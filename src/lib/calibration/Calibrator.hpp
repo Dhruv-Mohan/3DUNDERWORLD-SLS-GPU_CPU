@@ -38,7 +38,7 @@ class Calibrator {
      * /param img   Input image
      * /return 4 external points
      */
-    static cv::vector<cv::Point2f> manualMarkCheckBoard(cv::Mat img);
+    static std::vector<cv::Point2f> manualMarkCheckBoard(cv::Mat img);
 
     /*! Extract corners in an image
      *
@@ -50,8 +50,8 @@ class Calibrator {
      * \return
      */
     static bool findCornersInCamImg(const cv::Mat &img,
-                                    cv::vector<cv::Point2f> &camCorners,
-                                    cv::vector<cv::Point3f> &objCorners,
+                                    std::vector<cv::Point2f> &camCorners,
+                                    std::vector<cv::Point3f> &objCorners,
                                     cv::Size squareSize);
     /*! Mark a white pixel on \p img image. 
      */

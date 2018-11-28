@@ -12,7 +12,7 @@ namespace SLS {
 void calibBoardCornersMouseCallback(int event, int x, int y, int flags,
                                     void *param)
 {
-    cv::vector<cv::Point2f> *corners = (cv::vector<cv::Point2f> *)param;
+    std::vector<cv::Point2f> *corners = (std::vector<cv::Point2f> *)param;
 
     switch (event) {
         case CV_EVENT_LBUTTONDOWN:
@@ -42,9 +42,9 @@ void imagePointReturn(int event, int x, int y, int flags, void *param)
  * \param img Input image
  * \return An array of 4 picked corners
  */
-cv::vector<cv::Point2f> Calibrator::manualMarkCheckBoard(cv::Mat img)
+std::vector<cv::Point2f> Calibrator::manualMarkCheckBoard(cv::Mat img)
 {
-    cv::vector<cv::Point2f> corners;
+    std::vector<cv::Point2f> corners;
 
     cv::namedWindow("Mark Calibration Board", CV_WINDOW_NORMAL);
     cv::resizeWindow("Mark Calibration Board", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -122,7 +122,7 @@ cv::vector<cv::Point2f> Calibrator::manualMarkCheckBoard(cv::Mat img)
 }
 
 void drawOutsideOfRectangle(cv::Mat img,
-                            cv::vector<cv::Point2f> rectanglePoints,
+                            std::vector<cv::Point2f> rectanglePoints,
                             float color)
 {
     std::vector<cv::Point> corners;
@@ -199,8 +199,8 @@ float Calibrator::markWhite(const cv::Mat &img)
 }
 
 bool Calibrator::findCornersInCamImg(const cv::Mat &img,
-                                     cv::vector<cv::Point2f> &camCorners,
-                                     cv::vector<cv::Point3f> &objCorners,
+                                     std::vector<cv::Point2f> &camCorners,
+                                     std::vector<cv::Point3f> &objCorners,
                                      cv::Size squareSize)
 {
     cv::Mat img_copy = img.clone();  // keep a cpy of it
@@ -214,7 +214,7 @@ bool Calibrator::findCornersInCamImg(const cv::Mat &img,
     while (!found) {
         img_grey = img.clone();
         // ask user to mark 4 corners of the checkerboard
-        cv::vector<cv::Point2f> chessBoardCorners =
+        std::vector<cv::Point2f> chessBoardCorners =
             manualMarkCheckBoard(img_copy);
 
         // ask user to mark a white point on checkerboard
@@ -333,13 +333,13 @@ void Calibrator::Calibrate(ImageFileProcessor *cam, const std::string &calibImgs
     camImageSize.width = width;
 
     // Extract corners
-    cv::vector<cv::vector<cv::Point2f>> imgBoardCornersCam;
-    cv::vector<cv::vector<cv::Point3f>> objBoardCornersCam;
+    std::vector<std::vector<cv::Point2f>> imgBoardCornersCam;
+    std::vector<std::vector<cv::Point3f>> objBoardCornersCam;
     imgBoardCornersCam.clear();
     objBoardCornersCam.clear();
     for (size_t i = 0; i < cam->getNumFrames() - 1; i++) {
-        cv::vector<cv::Point2f> cCam;
-        cv::vector<cv::Point3f> cObj;
+        std::vector<cv::Point2f> cCam;
+        std::vector<cv::Point3f> cObj;
         auto img = cam->getNextFrame().clone();
         findCornersInCamImg(img, cCam, cObj, squareSize);
         if (cCam.size()) {
@@ -347,8 +347,8 @@ void Calibrator::Calibrate(ImageFileProcessor *cam, const std::string &calibImgs
             objBoardCornersCam.push_back(cObj);
         }
     }
-    cv::vector<cv::Mat> camRotationVectors;
-    cv::vector<cv::Mat> camTranslationVectors;
+    std::vector<cv::Mat> camRotationVectors;
+    std::vector<cv::Mat> camTranslationVectors;
 
     // Find intrinsic
     cv::calibrateCamera(
@@ -359,8 +359,8 @@ void Calibrator::Calibrate(ImageFileProcessor *cam, const std::string &calibImgs
 
     // Find extrinsic
     auto extImg = cam->getNextFrame().clone();
-    cv::vector<cv::Point2f> imgPoints;
-    cv::vector<cv::Point3f> objPoints3D;
+    std::vector<cv::Point2f> imgPoints;
+    std::vector<cv::Point3f> objPoints3D;
     findCornersInCamImg(extImg, imgPoints, objPoints3D, squareSize);
     cv::Mat rVec;
 
